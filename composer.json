@@ -1,0 +1,23 @@
+{
+    "name": "google/meet",
+    "type": "library",
+    "description": "Google Meet Integration",
+    "minimum-stability": "beta",
+    "require": {
+        "php": ">=5.4",
+        "google/auth": "^1.10",
+        "google/apiclient-services": "~0.13",
+        "google/apiclient": "^2.10"
+    },
+    "scripts": {
+        "pre-autoload-dump": "Google\\Task\\Composer::cleanup"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.x-dev"
+        },
+        "google/apiclient-services": [
+            "Calendar"
+        ]
+    }
+}

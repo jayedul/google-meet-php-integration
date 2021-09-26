@@ -1,0 +1,45 @@
+#google-meet-wrapper{
+    margin-right:15px
+}
+#google-meet-wrapper .consent-screen{
+    margin:0 auto;
+    width:600px;
+    padding:15px;
+    border-radius:6px;
+    border:1px solid white;
+    max-width:calc(100% - 48px);
+    background:white
+}
+#google-meet-wrapper .consent-screen.google-consent-screen-redirect{
+    text-align:center;
+    width:450px
+}
+#google-meet-wrapper .gm-upload-area{
+    border:2px dashed #BABABA;
+    border-radius:6px;
+    text-align:center;
+    padding:30px 10px;
+    margin-bottom:15px
+}
+#google-meet-wrapper .gm-upload-area span.file_name{
+    display:block;
+    margin-top:10px
+}
+#google-meet-wrapper .gm-upload-area button{
+    background:#3E64DE;
+    color:white;
+    display:inline-block
+}
+#google-meet-wrapper .gm-upload-area.dragover{
+    border:2px dashed #525252
+}
+ 
+#google-meet-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#google-meet-wrapper td, #google-meet-wrapper th{
+    border: 1px solid gray;
+    padding: 5px;
+}
