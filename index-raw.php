@@ -11,11 +11,11 @@
   */
 class GM {
 
-	private $client_id;
-	private $client_secret;
-	private $redirect_uri = 'http://localhost/meet/index-raw.php';
-	private $scope = 'https://www.googleapis.com/auth/calendar.events';
-	private $token_url = 'https://oauth2.googleapis.com/token';
+	public $client_id;
+	public $client_secret;
+	public $redirect_uri = 'http://localhost/meet/index-raw.php';
+	public $scope = 'https://www.googleapis.com/auth/calendar.events';
+	public $token_url = 'https://oauth2.googleapis.com/token';
 
 	public $wrapper_style = '
 		border:2px dashed #BABABA;
@@ -72,6 +72,8 @@ class GM {
 			if ( ! file_exists( $this->token_dir ) ) {
 				mkdir( $this->token_dir );
 			}
+
+			$token_data['expires_in'] = time() + $token_data['expires_in']; 
 
 			file_put_contents( $this->token_path, json_encode($token_data));
 			header( 'Location: ' . $this->redirect_uri );
@@ -193,13 +195,60 @@ class GM {
 		return $meetEvents;
 	}
 
+	private function refreshToken( $old_token ) {
+
+		// Request payload
+		$data = [
+			'client_id' => $this->client_id,
+			'client_secret' => $this->client_secret,
+			'refresh_token' => $old_token['refresh_token'],
+			'grant_type' => 'refresh_token'
+		];
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $this->token_url);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+
+		$response = curl_exec($ch);
+		curl_close($ch);
+
+		$new_token = json_decode($response, true);
+
+		if (isset($new_token['access_token'])) {
+
+			// Update token file with new access_token
+			$old_token['access_token'] = $new_token['access_token'];
+			$old_token['expires_in'] = time() + $new_token['expires_in']; // Expiration time
+			file_put_contents( $this->token_path, json_encode($old_token));
+
+			return $old_token;
+		} else {
+			echo "Failed to refresh token: " . $response;
+			exit;
+		}
+	}
+
 	private function getToken() {
-		return json_decode(file_get_contents($this->token_path), true);
+		$token = json_decode(file_get_contents($this->token_path), true);
+		if ( time() >= $token['expires_in'] ) {
+			$token = $this->refreshToken( $token );
+		}
+		return $token;
 	}
 }
 
 // Follow the instructions here to get your credentials https://docs.themeum.com/tutor-lms/addons/google-meet-integration/#configuring-app-credentials
 $gm = new GM( 'YOUR_CLIENT_ID', 'YOUR_CLIENT_SECRET' );
+
+if ( $gm->client_id === 'YOUR_CLIENT_ID' || $gm->client_secret === 'YOUR_CLIENT_SECRET' ) {
+	echo '<div style="' . $gm->wrapper_style . '">
+			You need to provide your client ID and client secret.
+		</div>';
+	exit;
+}
 
 // Accept code from consent response back
 if ( ! empty( $_GET['code'] ) ) {
