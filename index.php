@@ -1,4 +1,9 @@
 <?php
+/**
+ * This file uses google php packages for API calls
+ * 
+ * Follow the instructions here to get your credentials https://docs.themeum.com/tutor-lms/addons/google-meet-integration/#configuring-app-credentials
+ */
 
 define('ROOT_PATH', __DIR__);
 define('CREDENTIAL_PATH', __DIR__ . '/credentials');
